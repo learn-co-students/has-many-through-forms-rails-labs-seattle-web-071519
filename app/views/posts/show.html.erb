@@ -1,1 +1,39 @@
 
+<h2>Title: <%=@post.title%></h2>
+<h4>Categories: <%=@categories%></h4>
+<p>Content: <%=@post.content%><p>
+
+<p>Comments:</p>
+<%@comments.each do |comment|%>
+    <%=comment.content%>
+<%end%>
+<p>Users: </p>
+<%@users.each do |user|%>
+    <p><%=link_to user.username, user_path(user)%> says:
+    <%@comments.each do |comment|%>
+        <%if comment.user_id == user.id%>
+            <%=comment.content%>
+        <%end%>
+    <%end%>
+    </p>
+<%end%>
+
+<h2>Add a new comment: </h2>
+<%=form_for(@post.comments.build) do |f|%>
+    <%= f.hidden_field :post_id, value: @post.id %>
+    <p>Select existing user:</p>
+    <%=f.label :username%>
+    <%= f.collection_select :user_id, User.all, :id, :username%>
+    <p>Create new user:</p>
+    <%= f.fields_for :user, User.new do |user_fields|%>
+        <%=user_fields.label :username%>
+        <%=user_fields.text_field :username%>
+    <%end%>
+
+    <p>New Comment:</p>
+    <%=f.label :content%>
+    <%=f.text_area :content%>
+
+    <%=f.submit%>
+<%end%>
+
